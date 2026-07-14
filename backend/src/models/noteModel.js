@@ -1,4 +1,4 @@
-import Note from "./Note.js";
+import Note from "../../data/note.js";
 
 export async function getAll() {
   return Note.find().sort({ updatedAt: -1 });
