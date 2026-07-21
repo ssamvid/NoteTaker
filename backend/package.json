@@ -6,6 +6,7 @@
     "dev": "nodemon app.js",
     "start": "node app.js",
     "seed": "node src/seed.js",
+    "lint": "oxlint",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -23,5 +24,8 @@
     "mongodb": "^7.5.0",
     "mongoose": "^9.7.4",
     "nodemon": "^3.1.14"
+  },
+  "devDependencies": {
+    "oxlint": "^1.74.0"
   }
 }
