@@ -5,8 +5,11 @@ import {
   updateNoteRules,
   handleNoteValidation,
 } from "../validator/noteValidator.js";
+import { requireAuth } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
+
+router.use("/api/notes", requireAuth);
 
 router.get("/api/notes", NoteController.getNotes);
 router.post("/api/notes", createNoteRules, handleNoteValidation, NoteController.addNote);

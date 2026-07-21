@@ -1,20 +1,20 @@
 import Note from "../../data/note.js";
 
-export async function getAll() {
-  return Note.find().sort({ updatedAt: -1 });
+export async function getAllForUser(userId) {
+  return Note.find({ userId }).sort({ updatedAt: -1 });
 }
 
 export async function addNote(note) {
   return Note.create(note);
 }
 
-export async function updateNote(id, updatedFields) {
-  return Note.findByIdAndUpdate(id, updatedFields, {
+export async function updateNoteForUser(id, userId, updatedFields) {
+  return Note.findOneAndUpdate({ _id: id, userId }, updatedFields, {
     new: true,
     runValidators: true,
   });
 }
 
-export async function deleteNote(id) {
-  return Note.findByIdAndDelete(id);
+export async function deleteNoteForUser(id, userId) {
+  return Note.findOneAndDelete({ _id: id, userId });
 }

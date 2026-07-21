@@ -1,44 +1,41 @@
 import mongoose from "mongoose";
 
-const noteSchema = mongoose.Schema(
+const userSchema = mongoose.Schema(
   {
-    userId: {
-      required: true,
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-    title: {
+    name: {
       required: true,
       type: String,
       trim: true,
     },
-    body: {
+    email: {
       required: true,
       type: String,
       trim: true,
+      lowercase: true,
+      unique: true,
     },
-    category: {
+    password: {
       required: true,
       type: String,
-      enum: ["Personal", "Work", "Study"],
     },
-    pinned: {
+    isActive: {
       type: Boolean,
-      default: false,
+      default: true,
     },
   },
   {
-    timestamps: { createdAt: false, updatedAt: true },
+    timestamps: true,
     toJSON: {
       transform: (_doc, ret) => {
         ret.id = ret._id.toString();
         delete ret._id;
         delete ret.__v;
+        delete ret.password;
         return ret;
       },
     },
   },
 );
 
-const Note = mongoose.model("Note", noteSchema);
-export default Note;
+const User = mongoose.model("User", userSchema);
+export default User;
