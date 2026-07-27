@@ -6,7 +6,7 @@ const sampleNotes = [
     category: "Personal",
   },
   {
-    title: "Sprint planning notes",
+    title: "Sprint planning notes", 
     body: "Split the API work into three tickets. Ask design about the modal spacing before Thursday standup.",
     category: "Work",
   },

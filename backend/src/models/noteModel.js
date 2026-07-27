@@ -8,6 +8,10 @@ export async function addNote(note) {
   return Note.create(note);
 }
 
+export async function getOneForUser(id, userId) {
+  return Note.findOne({ _id: id, userId });
+}
+
 export async function updateNoteForUser(id, userId, updatedFields) {
   return Note.findOneAndUpdate({ _id: id, userId }, updatedFields, {
     new: true,

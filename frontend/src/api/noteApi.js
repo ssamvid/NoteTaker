@@ -18,3 +18,8 @@ export const updateNote = async (id, updatedFields) => {
 export const deleteNote = async (id) => {
   await client.delete(`/notes/${id}`)
 }
+
+export const summarizeNote = async (id) => {
+  const res = await client.post(`/notes/${id}/summarize`)
+  return res.data.summary
+}

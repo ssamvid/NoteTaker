@@ -1,4 +1,5 @@
 import * as NoteModel from "../models/noteModel.js";
+import { summarizeText } from "../services/geminiService.js";
 
 export async function getNotes(req, res) {
   try {
@@ -43,5 +44,20 @@ export async function deleteNote(req, res) {
     return res.status(200).json({ message: "Note deleted successfully." });
   } catch (error) {
     return res.status(500).json({ message: "Failed to delete note." });
+  }
+}
+
+export async function summarizeNote(req, res) {
+  try {
+    const note = await NoteModel.getOneForUser(req.params.id, req.user.id);
+
+    if (!note) {
+      return res.status(404).json({ message: "Note not found." });
+    }
+
+    const summary = await summarizeText(note.body);
+    return res.status(200).json({ summary });
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to summarize note." });
   }
 }

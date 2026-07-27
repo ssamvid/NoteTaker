@@ -15,5 +15,6 @@ router.get("/api/notes", NoteController.getNotes);
 router.post("/api/notes", createNoteRules, handleNoteValidation, NoteController.addNote);
 router.put("/api/notes/:id", updateNoteRules, handleNoteValidation, NoteController.updateNote);
 router.delete("/api/notes/:id", NoteController.deleteNote);
+router.post("/api/notes/:id/summarize", NoteController.summarizeNote);
 
 export default router;
