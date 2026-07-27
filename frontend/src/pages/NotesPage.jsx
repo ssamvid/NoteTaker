@@ -7,8 +7,10 @@ import NoteGridSkeleton from '../components/NoteGridSkeleton'
 import NewNoteModal from '../components/NewNoteModal'
 import CategoryFilter from '../components/CategoryFilter'
 import * as notesApi from '../api/noteApi'
+import { useTheme } from '../context/ThemeContext'
 
 function NotesPage() {
+  const { isDark, toggleTheme } = useTheme()
   const [notes, setNotes] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState(null)
@@ -16,9 +18,6 @@ function NotesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingNote, setEditingNote] = useState(null)
   const [activeCategory, setActiveCategory] = useState('All')
-  const [isDark, setIsDark] = useState(
-    () => localStorage.getItem('theme') === 'dark',
-  )
 
   // Fetch notes from the API on mount, then keep polling so notes created
   // elsewhere (e.g. via Postman) show up without a manual refresh.
@@ -46,12 +45,6 @@ function NotesPage() {
       clearInterval(intervalId)
     }
   }, [])
-
-  // Keep the <html> class and localStorage in sync with the theme choice.
-  useEffect(() => {
-    document.documentElement.classList.toggle('dark', isDark)
-    localStorage.setItem('theme', isDark ? 'dark' : 'light')
-  }, [isDark])
 
   const handleAddNote = async ({ title, body, category }) => {
     const newNote = await notesApi.createNote({ title, body, category })
@@ -94,7 +87,7 @@ function NotesPage() {
 
   return (
     <div className="min-h-screen bg-stone-50 dark:bg-stone-950 transition-colors">
-      <Header isDark={isDark} onToggleTheme={() => setIsDark((prev) => !prev)} />
+      <Header isDark={isDark} onToggleTheme={toggleTheme} />
 
       <main className="mx-auto max-w-5xl px-6 py-8">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">

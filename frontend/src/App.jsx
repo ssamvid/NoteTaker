@@ -2,7 +2,19 @@ import { Routes, Route } from 'react-router-dom'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import NotesPage from './pages/NotesPage'
-import { ProtectedRoute, GuestRoute } from './components/ProtectedRoute'
+import HomePage from './pages/HomePage'
+import LoadingScreen from './components/LoadingScreen'
+import { GuestRoute } from './components/ProtectedRoute'
+import { useAuth } from './context/AuthContext'
+
+// "/" shows the marketing homepage to guests and the notes app to
+// signed-in users, so login/signup can keep navigating to "/".
+function Root() {
+  const { user, isLoading } = useAuth()
+
+  if (isLoading) return <LoadingScreen />
+  return user ? <NotesPage /> : <HomePage />
+}
 
 function App() {
   return (
@@ -12,9 +24,7 @@ function App() {
         <Route path="/signup" element={<SignupPage />} />
       </Route>
 
-      <Route element={<ProtectedRoute />}>
-        <Route path="/" element={<NotesPage />} />
-      </Route>
+      <Route path="/" element={<Root />} />
     </Routes>
   )
 }
