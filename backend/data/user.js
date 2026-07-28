@@ -22,6 +22,14 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    resetPasswordTokenHash: {
+      type: String,
+      select: false,
+    },
+    resetPasswordExpires: {
+      type: Date,
+      select: false,
+    },
   },
   {
     timestamps: true,
@@ -31,6 +39,8 @@ const userSchema = mongoose.Schema(
         delete ret._id;
         delete ret.__v;
         delete ret.password;
+        delete ret.resetPasswordTokenHash;
+        delete ret.resetPasswordExpires;
         return ret;
       },
     },

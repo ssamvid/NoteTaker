@@ -1,6 +1,14 @@
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import crypto from "crypto";
 import * as UserModel from "../models/userModel.js";
+import { sendPasswordResetEmail } from "../services/mailService.js";
+
+const RESET_TOKEN_TTL_MS = 60 * 60 * 1000; // 1 hour
+
+function hashToken(token) {
+  return crypto.createHash("sha256").update(token).digest("hex");
+}
 
 function signToken(user) {
   return jwt.sign({ id: user._id.toString() }, process.env.JWT_SECRET, {
@@ -54,4 +62,51 @@ export async function login(req, res) {
 
 export async function me(req, res) {
   return res.status(200).json({ user: req.user });
+}
+
+export async function forgotPassword(req, res) {
+  const genericResponse = {
+    message: "If an account with that email exists, we've sent a reset link.",
+  };
+
+  try {
+    const { email } = req.body;
+    const user = await UserModel.findByEmail(email);
+
+    if (user) {
+      const rawToken = crypto.randomBytes(32).toString("hex");
+      const tokenHash = hashToken(rawToken);
+      const expires = new Date(Date.now() + RESET_TOKEN_TTL_MS);
+
+      await UserModel.setResetToken(user._id, tokenHash, expires);
+
+      const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${rawToken}`;
+      await sendPasswordResetEmail(user.email, resetLink);
+    }
+
+    return res.status(200).json(genericResponse);
+  } catch (error) {
+    // Still return the generic response so we never leak whether the email
+    // exists or reveal that mail delivery failed.
+    return res.status(200).json(genericResponse);
+  }
+}
+
+export async function resetPassword(req, res) {
+  try {
+    const { token, password } = req.body;
+    const tokenHash = hashToken(token);
+
+    const user = await UserModel.findByResetTokenHash(tokenHash);
+    if (!user) {
+      return res.status(400).json({ message: "This reset link is invalid or has expired." });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 10);
+    await UserModel.resetPassword(user._id, passwordHash);
+
+    return res.status(200).json({ message: "Password reset successfully." });
+  } catch (error) {
+    return res.status(500).json({ message: "Failed to reset password." });
+  }
 }
