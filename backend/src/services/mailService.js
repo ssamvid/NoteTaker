@@ -1,26 +1,23 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-let transporter;
+let resend;
 
-function getTransporter() {
-  if (!transporter) {
-    transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASS,
-      },
-      connectionTimeout: 10_000,
-      greetingTimeout: 10_000,
-      socketTimeout: 10_000,
-    });
+function getClient() {
+  if (!resend) {
+    resend = new Resend(process.env.RESEND_API_KEY);
   }
-  return transporter;
+  return resend;
 }
 
+// `onboarding@resend.dev` is Resend's shared sandbox sender — it works with
+// no setup, but until a custom domain is verified in Resend, it can only
+// deliver to the email address on the Resend account itself, not to
+// arbitrary users. Swap RESEND_FROM once a verified domain is set up.
+const FROM = process.env.RESEND_FROM ?? "Note Taker <onboarding@resend.dev>";
+
 export async function sendPasswordResetEmail(to, resetLink) {
-  await getTransporter().sendMail({
-    from: process.env.SMTP_USER,
+  const { error } = await getClient().emails.send({
+    from: FROM,
     to,
     subject: "Reset your Note Taker password",
     html: `
@@ -29,4 +26,8 @@ export async function sendPasswordResetEmail(to, resetLink) {
       <p>If you didn't request this, you can safely ignore this email.</p>
     `,
   });
+
+  if (error) {
+    throw new Error(error.message);
+  }
 }
