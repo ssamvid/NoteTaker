@@ -45,4 +45,6 @@ For the frontend, move into the frontend folder, run npm install, then run npm r
 
 ## Deployment
 
-The frontend is deployed on Netlify and the backend is deployed on Render, configured through the render.yaml file at the root of this repository. The GitHub repository for this project is at github.com/ssamvid/NoteTaker.
+The frontend is deployed on Netlify and the backend is deployed on Render, configured through the render.yaml file at the root of this repository.
+
+The live app can be found at samvidshrestha-notetaker.netlify.app, and the backend API is running at note-taker-backend-dhkj.onrender.com. The GitHub repository for this project is at github.com/ssamvid/NoteTaker.
